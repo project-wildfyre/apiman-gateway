@@ -5,8 +5,12 @@ MAINTAINER Marc Savy <marc.savy@redhat.com>
 
 ENV APIMAN_VERSION 1.5.1.Final
 
-WORKDIR /wildfly
-COPY . ./opt/jboss/wildfly/
+RUN echo $(ls -1 /opt/jboss/wildfly)
+
+WORKDIR wildfly
+ADD ./src/ /opt/jboss/wildfly/
+
+RUN echo $(ls -1 /opt/jboss/wildfly)
 
 USER root
 
