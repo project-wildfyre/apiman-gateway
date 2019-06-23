@@ -1,5 +1,5 @@
 # Use WildFly 11 image as the base
-FROM jboss/wildfly:11.0.0.Final
+FROM jboss/wildfly:10.1.0.Final
 
 MAINTAINER Marc Savy <marc.savy@redhat.com>
 
