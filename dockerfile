@@ -1,4 +1,4 @@
-FROM apiman/on-wildfly10
+FROM apiman/on-wildfly10:1.5.1.Final
 
 
 RUN echo $(ls -1 /opt/jboss/wildfly)
