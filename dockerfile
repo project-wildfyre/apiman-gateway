@@ -1,4 +1,4 @@
-FROM apiman/on-wildfly10:1.5.1.Final
+FROM apiman/on-wildfly11:1.5.1.Final
 
 RUN echo '>>> before'
 RUN echo $(ls -1 ${JBOSS_HOME}/standalone/configuration)
@@ -6,6 +6,7 @@ RUN echo $(ls -1 ${JBOSS_HOME}/standalone/configuration)
 WORKDIR ${JBOSS_HOME}
 ADD ./configuration/apiman.properties ${JBOSS_HOME}/standalone/configuration/
 ADD ./configuration/standalone-apiman.xml ${JBOSS_HOME}/standalone/configuration/
+ADD ./configuration/apiman.jks ${JBOSS_HOME}/standalone/configuration/
 ADD ./configuration/copytest.txt ${JBOSS_HOME}/standalone/configuration/
 
 RUN echo '<<< after'

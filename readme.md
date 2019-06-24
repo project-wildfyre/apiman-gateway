@@ -12,3 +12,8 @@ http://www.apiman.io/latest/installation-guide.html#_how_to_use_an_external_keyc
  docker build . -t apiman
 
   docker run -d -p 8080:8080 apiman
+  
+  
+## Self certify certificate
+
+keytool -genkey -alias apimancert -keyalg RSA -validity 3650 -keysize 2048 -keystore apiman.jks
