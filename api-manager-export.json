@@ -1,0 +1,842 @@
+{
+  "Metadata" : {
+    "exportedOn" : "2019-06-24T20:11:03Z",
+    "apimanVersion" : "1.5.1.Final"
+  },
+  "Users" : [ {
+    "username" : "kevin.mayfield@airelogic.com",
+    "fullName" : "Kevin Mayfield",
+    "email" : "kevin.mayfield@airelogic.com",
+    "joinedOn" : "2019-06-24T19:56:02Z",
+    "admin" : false
+  } ],
+  "Gateways" : [ {
+    "id" : "TheGateway",
+    "name" : "The Gateway",
+    "description" : "This is the gateway.",
+    "createdBy" : "admin",
+    "createdOn" : "2016-05-16T12:34:15Z",
+    "modifiedBy" : "admin",
+    "modifiedOn" : "2016-05-16T12:34:15Z",
+    "type" : "REST",
+    "configuration" : "{\"endpoint\":\"${apiman.gateway-endpoint:https://localhost:8443/apiman-gateway-api}\",\"username\":\"${apiman.gateway-endpoint.username:apimanager}\",\"password\":\"${apiman.gateway-endpoint.password:apiman123!}\"}"
+  } ],
+  "Plugins" : [ ],
+  "Roles" : [ {
+    "id" : "APIDeveloper",
+    "name" : "API Developer",
+    "description" : "Users responsible for creating and managing APIs should be granted this role within an Organization.",
+    "createdBy" : "admin",
+    "createdOn" : "2016-05-16T12:34:14Z",
+    "autoGrant" : false,
+    "permissions" : [ "planEdit", "apiView", "planAdmin", "apiEdit", "apiAdmin", "planView" ]
+  }, {
+    "id" : "ClientAppDeveloper",
+    "name" : "Client App Developer",
+    "description" : "Users responsible for creating and managing client apps should be granted this role within an Organization.",
+    "createdBy" : "admin",
+    "createdOn" : "2016-05-16T12:34:14Z",
+    "autoGrant" : false,
+    "permissions" : [ "clientView", "clientAdmin", "clientEdit" ]
+  }, {
+    "id" : "OrganizationOwner",
+    "name" : "Organization Owner",
+    "description" : "Automatically granted to the user who creates an Organization.  Grants all privileges.",
+    "createdBy" : "admin",
+    "createdOn" : "2016-05-16T12:34:14Z",
+    "autoGrant" : true,
+    "permissions" : [ "clientView", "planEdit", "apiView", "orgView", "planAdmin", "apiEdit", "clientAdmin", "apiAdmin", "orgEdit", "orgAdmin", "clientEdit", "planView" ]
+  } ],
+  "PolicyDefinitions" : [ {
+    "id" : "AuthorizationPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.AuthorizationPolicy",
+    "name" : "Authorization Policy",
+    "description" : "Enables fine grained authorization to API resources based on authenticated user roles.",
+    "icon" : "users",
+    "templates" : [ {
+      "template" : "Appropriate authorization roles are required.  There are ${rules.size()} authorization rules defined."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "BASICAuthenticationPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.BasicAuthenticationPolicy",
+    "name" : "BASIC Authentication Policy",
+    "description" : "Enables HTTP BASIC Authentication on an API.  Some configuration required.",
+    "icon" : "lock",
+    "templates" : [ {
+      "template" : "Access to the API is protected by BASIC Authentication through the '${realm}' authentication realm.  @if{forwardIdentityHttpHeader != null}Successfully authenticated requests will forward the authenticated identity to the back end API via the '${forwardIdentityHttpHeader}' custom HTTP header.@end{}"
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "CachingPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.CachingPolicy",
+    "name" : "Caching Policy",
+    "description" : "Allows caching of API responses in the Gateway to reduce overall traffic to the back-end API.",
+    "icon" : "hdd-o",
+    "templates" : [ {
+      "template" : "API responses will be cached for ${ttl} seconds."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "IgnoredResourcesPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.IgnoredResourcesPolicy",
+    "name" : "Ignored Resources Policy",
+    "description" : "Requests satisfying the provided regular expression will be ignored.",
+    "icon" : "eye-slash",
+    "templates" : [ {
+      "template" : "Requests matching any of the ${rules.size()} regular expressions provided will receive a 404 error code."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "IPBlacklistPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.IPBlacklistPolicy",
+    "name" : "IP Blacklist Policy",
+    "description" : "Requests that originate from a specified set of valid IP addresses will be denied access.",
+    "icon" : "thumbs-down",
+    "templates" : [ {
+      "template" : "Requests that originate from the set of ${ipList.size()} configured IP address(es) will be denied access to the managed API."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "IPWhitelistPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.IPWhitelistPolicy",
+    "name" : "IP Whitelist Policy",
+    "description" : "Only requests that originate from a specified set of valid IP addresses will be allowed through.",
+    "icon" : "filter",
+    "templates" : [ {
+      "template" : "Only requests that originate from the set of ${ipList.size()} configured IP address(es) will be allowed to invoke the managed API."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "QuotaPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.QuotaPolicy",
+    "name" : "Quota Policy",
+    "description" : "Provides a way to limit the total number of requests that can be sent to an API.",
+    "icon" : "exchange",
+    "templates" : [ {
+      "template" : "Consumers cannot exceed their quota of ${limit} requests per ${granularity} per ${period}."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "RateLimitingPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.RateLimitingPolicy",
+    "name" : "Rate Limiting Policy",
+    "description" : "Enforces rate configurable request rate limits on an API.  This ensures that consumers can't overload an API with too many requests.",
+    "icon" : "sliders",
+    "templates" : [ {
+      "template" : "Consumers are limited to ${limit} requests per ${granularity} per ${period}."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "TimeRestrictedAccessPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.TimeRestrictedAccessPolicy",
+    "name" : "Time Restricted Access Policy",
+    "description" : "Requests matching the specified regular expression and made within the specified time period will be ignored.",
+    "icon" : "clock-o",
+    "templates" : [ {
+      "template" : "Requests matching the regular expression and made outside the specified time period will receive a 423 error code."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "TransferQuotaPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.TransferQuotaPolicy",
+    "name" : "Transfer Quota Policy",
+    "description" : "Provides a way to limit the total number of bytes that can be transferred from (or to) an API.",
+    "icon" : "download",
+    "templates" : [ {
+      "template" : "Consumers are limited to transferring ${limit} bytes per ${granularity} per ${period}."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  }, {
+    "id" : "URLRewritingPolicy",
+    "policyImpl" : "class:io.apiman.gateway.engine.policies.URLRewritingPolicy",
+    "name" : "URL Rewriting Policy",
+    "description" : "Responses from the back-end API will be modified by fixing up any incorrect URLs found with modified ones.  This is useful because apiman works through an API Gateway.",
+    "icon" : "pencil-square",
+    "templates" : [ {
+      "template" : "Requests and/or responses will be modified by finding all text matching regular expression '${fromRegex}' with '${toReplacement}'."
+    } ],
+    "formType" : "Default",
+    "deleted" : false
+  } ],
+  "Orgs" : [ {
+    "OrganizationBean" : {
+      "id" : "NHSDigital",
+      "name" : "NHS Digital",
+      "createdBy" : "kevin.mayfield@airelogic.com",
+      "createdOn" : "2019-06-24T19:56:26Z",
+      "modifiedBy" : "kevin.mayfield@airelogic.com",
+      "modifiedOn" : "2019-06-24T19:56:26Z"
+    },
+    "Memberships" : [ {
+      "id" : 1000,
+      "userId" : "kevin.mayfield@airelogic.com",
+      "roleId" : "OrganizationOwner",
+      "organizationId" : "NHSDigital",
+      "createdOn" : "2019-06-24T19:56:26Z"
+    } ],
+    "Plans" : [ ],
+    "Apis" : [ {
+      "ApiBean" : {
+        "id" : "GPConnectFHIRFacade",
+        "name" : "GP Connect FHIR Facade",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T20:01:08Z"
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1015,
+          "status" : "Ready",
+          "endpoint" : "https://gpc.dwp.hippodigital.cloud",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T20:01:08Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T20:01:57Z",
+          "definitionType" : "SwaggerJSON",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    }, {
+      "ApiBean" : {
+        "id" : "NRLFHIRFacadeNationalRecordLocator",
+        "name" : "NRL FHIR Facade (National Record Locator)",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T20:02:10Z",
+        "numPublished" : 1
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1021,
+          "status" : "Published",
+          "endpoint" : "https://nrl.dwp.hippodigital.cloud",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T20:02:10Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T20:02:57Z",
+          "publishedOn" : "2019-06-24T20:03:06Z",
+          "definitionType" : "SwaggerJSON",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    }, {
+      "ApiBean" : {
+        "id" : "SDSFHIRAPISpineDirectoryServices",
+        "name" : "SDS FHIR API (Spine Directory Services)",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T19:57:30Z",
+        "numPublished" : 1
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1002,
+          "status" : "Published",
+          "endpoint" : "https://sds.dwp.hippodigital.cloud",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T19:57:30Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T19:59:17Z",
+          "publishedOn" : "2019-06-24T19:59:20Z",
+          "definitionType" : "SwaggerJSON",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    }, {
+      "ApiBean" : {
+        "id" : "SMSPPDSFHIRFacade",
+        "name" : "SMSP/PDS FHIR Facade",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T20:00:03Z"
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1009,
+          "status" : "Ready",
+          "endpoint" : "https://smsp.dwp.hippodigital.cloud",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T20:00:03Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T20:00:56Z",
+          "definitionType" : "SwaggerJSON",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    } ],
+    "Clients" : [ ],
+    "Audits" : [ {
+      "id" : 999,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Organization",
+      "createdOn" : "2019-06-24T19:56:26Z",
+      "what" : "Create"
+    }, {
+      "id" : 1001,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SDSFHIRAPISpineDirectoryServices",
+      "createdOn" : "2019-06-24T19:57:30Z",
+      "what" : "Create"
+    }, {
+      "id" : 1003,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SDSFHIRAPISpineDirectoryServices",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T19:57:30Z",
+      "what" : "Create"
+    }, {
+      "id" : 1004,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SDSFHIRAPISpineDirectoryServices",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T19:58:43Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://sds.dwp.hippodigital.cloud\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1005,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SDSFHIRAPISpineDirectoryServices",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T19:59:10Z",
+      "what" : "UpdateDefinition"
+    }, {
+      "id" : 1006,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SDSFHIRAPISpineDirectoryServices",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T19:59:17Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1007,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SDSFHIRAPISpineDirectoryServices",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T19:59:20Z",
+      "what" : "Publish"
+    }, {
+      "id" : 1008,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SMSPPDSFHIRFacade",
+      "createdOn" : "2019-06-24T20:00:03Z",
+      "what" : "Create"
+    }, {
+      "id" : 1010,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SMSPPDSFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:00:03Z",
+      "what" : "Create"
+    }, {
+      "id" : 1011,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SMSPPDSFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:00:31Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://smsp.dwp.hippodigital.cloud\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1012,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SMSPPDSFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:00:46Z",
+      "what" : "UpdateDefinition"
+    }, {
+      "id" : 1013,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "SMSPPDSFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:00:56Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1014,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "GPConnectFHIRFacade",
+      "createdOn" : "2019-06-24T20:01:08Z",
+      "what" : "Create"
+    }, {
+      "id" : 1016,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "GPConnectFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:01:08Z",
+      "what" : "Create"
+    }, {
+      "id" : 1017,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "GPConnectFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:01:28Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://gpc.dwp.hippodigital.cloud\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1018,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "GPConnectFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:01:45Z",
+      "what" : "UpdateDefinition"
+    }, {
+      "id" : 1019,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "GPConnectFHIRFacade",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:01:58Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1020,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "NRLFHIRFacadeNationalRecordLocator",
+      "createdOn" : "2019-06-24T20:02:10Z",
+      "what" : "Create"
+    }, {
+      "id" : 1022,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "NRLFHIRFacadeNationalRecordLocator",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:02:10Z",
+      "what" : "Create"
+    }, {
+      "id" : 1023,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "NRLFHIRFacadeNationalRecordLocator",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:02:33Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://nrl.dwp.hippodigital.cloud\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1024,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "NRLFHIRFacadeNationalRecordLocator",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:02:51Z",
+      "what" : "UpdateDefinition"
+    }, {
+      "id" : 1025,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "NRLFHIRFacadeNationalRecordLocator",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:02:57Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1026,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "NHSDigital",
+      "entityType" : "Api",
+      "entityId" : "NRLFHIRFacadeNationalRecordLocator",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:03:06Z",
+      "what" : "Publish"
+    } ]
+  }, {
+    "OrganizationBean" : {
+      "id" : "OneLondon",
+      "name" : "One London",
+      "createdBy" : "kevin.mayfield@airelogic.com",
+      "createdOn" : "2019-06-24T20:08:54Z",
+      "modifiedBy" : "kevin.mayfield@airelogic.com",
+      "modifiedOn" : "2019-06-24T20:08:54Z"
+    },
+    "Memberships" : [ {
+      "id" : 1044,
+      "userId" : "kevin.mayfield@airelogic.com",
+      "roleId" : "OrganizationOwner",
+      "organizationId" : "OneLondon",
+      "createdOn" : "2019-06-24T20:08:54Z"
+    } ],
+    "Plans" : [ ],
+    "Apis" : [ {
+      "ApiBean" : {
+        "id" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+        "name" : "EDMS FHIR API (Electronic Document Management System)",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T20:09:07Z",
+        "numPublished" : 1
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1046,
+          "status" : "Published",
+          "endpoint" : "https://edms.hippodigital.cloud/ccri-fhir",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T20:09:07Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T20:10:01Z",
+          "publishedOn" : "2019-06-24T20:10:13Z",
+          "definitionType" : "SwaggerJSON",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    } ],
+    "Clients" : [ ],
+    "Audits" : [ {
+      "id" : 1043,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Organization",
+      "createdOn" : "2019-06-24T20:08:54Z",
+      "what" : "Create"
+    }, {
+      "id" : 1045,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Api",
+      "entityId" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+      "createdOn" : "2019-06-24T20:09:07Z",
+      "what" : "Create"
+    }, {
+      "id" : 1047,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Api",
+      "entityId" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:09:07Z",
+      "what" : "Create"
+    }, {
+      "id" : 1048,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Api",
+      "entityId" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:09:38Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://edms.hippodigital.cloud/ccri-fhir\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1049,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Api",
+      "entityId" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:09:55Z",
+      "what" : "UpdateDefinition"
+    }, {
+      "id" : 1050,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Api",
+      "entityId" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:10:01Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1051,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "OneLondon",
+      "entityType" : "Api",
+      "entityId" : "EDMSFHIRAPIElectronicDocumentManagementSystem",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:10:13Z",
+      "what" : "Publish"
+    } ]
+  }, {
+    "OrganizationBean" : {
+      "id" : "YorkshireandHumbersideCareRecords",
+      "name" : "Yorkshire and Humberside Care Records",
+      "createdBy" : "kevin.mayfield@airelogic.com",
+      "createdOn" : "2019-06-24T20:04:12Z",
+      "modifiedBy" : "kevin.mayfield@airelogic.com",
+      "modifiedOn" : "2019-06-24T20:04:12Z"
+    },
+    "Memberships" : [ {
+      "id" : 1028,
+      "userId" : "kevin.mayfield@airelogic.com",
+      "roleId" : "OrganizationOwner",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "createdOn" : "2019-06-24T20:04:12Z"
+    } ],
+    "Plans" : [ ],
+    "Apis" : [ {
+      "ApiBean" : {
+        "id" : "CDRFHIRAPIClinicalDataRepository",
+        "name" : "CDR FHIR API (Clinical Data Repository)",
+        "description" : "HAPI FHIR JPA Server",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T20:04:31Z",
+        "numPublished" : 1
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1030,
+          "status" : "Published",
+          "endpoint" : "https://cdr.dwp.hippodigital.cloud",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T20:04:31Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T20:04:59Z",
+          "publishedOn" : "2019-06-24T20:05:01Z",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    }, {
+      "ApiBean" : {
+        "id" : "CDRSQLFHIRAPIClinicalDataRepository",
+        "name" : "CDR SQL FHIR API (Clinical Data Repository)",
+        "description" : "Includes validation and reference services",
+        "createdBy" : "kevin.mayfield@airelogic.com",
+        "createdOn" : "2019-06-24T20:06:45Z",
+        "numPublished" : 1
+      },
+      "Versions" : [ {
+        "ApiVersionBean" : {
+          "id" : 1037,
+          "status" : "Published",
+          "endpoint" : "https://dwp.hippodigital.cloud/ccri-fhir",
+          "endpointType" : "rest",
+          "endpointContentType" : "json",
+          "endpointProperties" : { },
+          "gateways" : [ {
+            "gatewayId" : "TheGateway"
+          } ],
+          "publicAPI" : true,
+          "plans" : [ ],
+          "version" : "1.0",
+          "createdBy" : "kevin.mayfield@airelogic.com",
+          "createdOn" : "2019-06-24T20:06:45Z",
+          "modifiedBy" : "kevin.mayfield@airelogic.com",
+          "modifiedOn" : "2019-06-24T20:08:12Z",
+          "publishedOn" : "2019-06-24T20:08:38Z",
+          "definitionType" : "SwaggerJSON",
+          "parsePayload" : false
+        },
+        "Policies" : [ ]
+      } ]
+    } ],
+    "Clients" : [ ],
+    "Audits" : [ {
+      "id" : 1027,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Organization",
+      "createdOn" : "2019-06-24T20:04:12Z",
+      "what" : "Create"
+    }, {
+      "id" : 1029,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRFHIRAPIClinicalDataRepository",
+      "createdOn" : "2019-06-24T20:04:31Z",
+      "what" : "Create"
+    }, {
+      "id" : 1031,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:04:31Z",
+      "what" : "Create"
+    }, {
+      "id" : 1032,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:04:50Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://cdr.dwp.hippodigital.cloud\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1033,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:04:59Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1034,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:05:01Z",
+      "what" : "Publish"
+    }, {
+      "id" : 1035,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRFHIRAPIClinicalDataRepository",
+      "createdOn" : "2019-06-24T20:05:21Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"description\",\"before\":null,\"after\":\"HAPI FHIR JPA Server\"}]}"
+    }, {
+      "id" : 1036,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRSQLFHIRAPIClinicalDataRepository",
+      "createdOn" : "2019-06-24T20:06:45Z",
+      "what" : "Create"
+    }, {
+      "id" : 1038,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRSQLFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:06:45Z",
+      "what" : "Create"
+    }, {
+      "id" : 1039,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRSQLFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:07:19Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"endpoint\",\"before\":null,\"after\":\"https://dwp.hippodigital.cloud/ccri-fhir\"},{\"name\":\"endpointType\",\"before\":null,\"after\":\"rest\"},{\"name\":\"endpointContentType\",\"before\":null,\"after\":\"json\"}]}"
+    }, {
+      "id" : 1040,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRSQLFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:07:58Z",
+      "what" : "UpdateDefinition"
+    }, {
+      "id" : 1041,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRSQLFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:08:12Z",
+      "what" : "Update",
+      "data" : "{\"changes\":[{\"name\":\"publicAPI\",\"before\":\"false\",\"after\":\"true\"}]}"
+    }, {
+      "id" : 1042,
+      "who" : "kevin.mayfield@airelogic.com",
+      "organizationId" : "YorkshireandHumbersideCareRecords",
+      "entityType" : "Api",
+      "entityId" : "CDRSQLFHIRAPIClinicalDataRepository",
+      "entityVersion" : "1.0",
+      "createdOn" : "2019-06-24T20:08:38Z",
+      "what" : "Publish"
+    } ]
+  } ]
+}
