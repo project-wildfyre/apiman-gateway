@@ -4,27 +4,19 @@ services:
 
 # Wildfyre API Manager
 
- 
-  apimanes:
-    container_name: apimanes
-    image: elasticsearch:5.6.9
-    volumes:
-      - wf-elastic:/var/lib/elasticsearch/data
-    ports:
-      - 9200:9200
-      - 9300:9300
-    networks:
-      - gwy_net
+
 
   apiman:
     container_name: apiman
     image: thorlogic/apiman
     depends_on:
-      - apimanes
+      - apimansql
     links:
-      - apimanes
+      - apimansql
     environment:
-      - apiman.es.host=apimanes
+      - apiman.es.host=localhost
+      - apiman.es.port=19200
+      - apiman.gateway-endpoint=https://apiman.dwp.hippodigital.cloud/apiman-gateway-api
     ports:
       - 8080:8080
       - 8443:8443
@@ -33,17 +25,37 @@ services:
     networks:
       - gwy_net
 
-# Data Load imports a set of sample data into the reference implementation (optional)
+  apimansql:
+    container_name: apimansql
+    image: postgres:9.3
+    volumes:
+      - api-postgres:/var/lib/postgresql/data
+    environment:
+      - POSTGRES_DB=apiman
+      - POSTGRES_USER=apiman
+      - POSTGRES_PASSWORD=apiman_p123
+    ports:
+      - 5434:5432
+    networks:
+      - gwy_net
 
+#  apimanes:
+#    container_name: apimanes
+#    image: elasticsearch:5.6.9
+#    volumes:
+#      - wf-elastic:/var/lib/elasticsearch/data
+#    ports:
+#      - 9200:9200
+#      - 9300:9300
+#    networks:
+#      - gwy_net
 
 
 
 volumes:
   tomcat-log-volume:
-  tie-log-volume:
   wf-elastic:
-  sqlvol:
-  sfs-postgres :
+  api-postgres :
 
 networks:
   gwy_net:
